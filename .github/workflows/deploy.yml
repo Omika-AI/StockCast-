@@ -19,7 +19,7 @@ jobs:
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
-            cd ~/upsell
+            cd ~/stockcast
 
             # Pull latest code
             git pull origin main || echo "Git pull failed - continuing with existing code"
@@ -36,7 +36,7 @@ jobs:
             npm run build
 
             # Restart with PM2
-            pm2 restart upsell || pm2 start npm --name "upsell" -- run start
+            pm2 restart stockcast || pm2 start npm --name "stockcast" -- run start
 
             # Persist PM2 process list
             pm2 save
