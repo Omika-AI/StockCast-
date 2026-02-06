@@ -19,10 +19,12 @@ jobs:
           username: ${{ secrets.HETZNER_SSH_USER }}
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
+            # Clone if first deploy, otherwise pull
+            if [ ! -d ~/stockcast ]; then
+              git clone https://github.com/Omika-AI/StockCast-.git ~/stockcast
+            fi
             cd ~/stockcast
-
-            # Pull latest code
-            git pull origin main || echo "Git pull failed - continuing with existing code"
+            git pull origin main
 
             # Install dependencies
             npm ci
