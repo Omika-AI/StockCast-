@@ -2,7 +2,7 @@
   "name": "stockcast",
   "private": true,
   "scripts": {
-    "build": "remix vite:build",
+    "build": "npx --package=@remix-run/dev remix vite:build",
     "dev": "shopify app dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
