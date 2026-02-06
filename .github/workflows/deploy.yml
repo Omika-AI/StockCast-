@@ -1,0 +1,42 @@
+name: Deploy to Hetzner
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: SSH into Hetzner and deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HETZNER_HOST }}
+          username: ${{ secrets.HETZNER_SSH_USER }}
+          key: ${{ secrets.HETZNER_SSH_KEY }}
+          script: |
+            cd ~/upsell
+
+            # Pull latest code
+            git pull origin main || echo "Git pull failed - continuing with existing code"
+
+            # Install dependencies
+            npm ci
+
+            # Load env vars, run Prisma generate + migrate
+            set -a && source .env && set +a
+            npx prisma generate
+            npx prisma migrate deploy
+
+            # Build the app (react-router build)
+            npm run build
+
+            # Restart with PM2
+            pm2 restart upsell || pm2 start npm --name "upsell" -- run start
+
+            # Persist PM2 process list
+            pm2 save

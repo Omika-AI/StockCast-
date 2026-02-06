@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model Shop {
+  id                String   @id @default(cuid())
+  shopDomain        String   @unique
+  leadTimeDays      Int      @default(84)
+  saleRangeDays     Int      @default(90)
+  monthlyGrowthRate Float    @default(1.10)
+  alertThreshold    Int      @default(14)
+  billingStatus     String   @default("free")
+  billingPlan       String?
+  chargeId          String?
+  trialEndsAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ProductSettings {
+  id                String   @id @default(cuid())
+  shopId            String
+  shopifyProductId  String
+  leadTimeDays      Int?
+  saleRangeDays     Int?
+  monthlyGrowthRate Float?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([shopId, shopifyProductId])
+}
+
+model IncomingStock {
+  id               String   @id @default(cuid())
+  shopId           String
+  shopifyProductId String
+  quantity         Int
+  expectedDate     DateTime
+  note             String?
+  createdAt        DateTime @default(now())
+
+  @@index([shopId, shopifyProductId])
+}
+
+model SalesSnapshot {
+  id               String   @id @default(cuid())
+  shopId           String
+  shopifyProductId String
+  date             DateTime
+  quantity         Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  @@unique([shopId, shopifyProductId, date])
+  @@index([shopId, shopifyProductId])
+}
