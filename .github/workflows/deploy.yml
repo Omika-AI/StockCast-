@@ -20,7 +20,8 @@ jobs:
           key: ${{ secrets.HETZNER_SSH_KEY }}
           script: |
             # Clone if first deploy, otherwise pull
-            if [ ! -d ~/stockcast ]; then
+            if [ ! -d ~/stockcast/.git ]; then
+              rm -rf ~/stockcast
               git clone https://github.com/Omika-AI/StockCast-.git ~/stockcast
             fi
             cd ~/stockcast
